@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Light POS</title>
+    <style>
+        :root {
+            --pos-bg: #f8f9fa;
+            --pos-border: #dee2e6;
+            --screen-bg: #e3f2fd;
+            --key-bg: #ffffff;
+            --accent-blue: #007bff;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #ffffff;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        /* Το σώμα του POS */
+        .pos-case {
+            position: relative;
+            width: 320px;
+            height: 500px;
+            background: var(--pos-bg);
+            border-radius: 40px;
+            padding: 25px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+            border: 2px solid var(--pos-border);
+        }
+
+        /* Η σχισμή για το Swipe */
+        .swipe-track {
+            position: absolute;
+            right: -5px;
+            top: 80px;
+            width: 35px;
+            height: 340px;
+            background: #eceff1;
+            border-radius: 10px;
+            border: 2px solid #cfd8dc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #90a4ae;
+            writing-mode: vertical-rl;
+            font-size: 11px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        /* Οθόνη */
+        .screen {
+            width: 100%;
+            height: 160px;
+            background: var(--screen-bg);
+            border-radius: 15px;
+            border: 2px solid #bbdefb;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 25px;
+            color: #0d47a1;
+        }
+
+        .amount { font-size: 32px; font-weight: bold; }
+        .msg { font-size: 13px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.8; }
+
+        /* Πληκτρολόγιο */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .btn {
+            background: var(--key-bg);
+            color: #444;
+            border: 1px solid #e0e0e0;
+            padding: 18px;
+            border-radius: 12px;
+            font-size: 20px;
+            font-weight: 500;
+            cursor: pointer;
+            box-shadow: 0 3px 0 #eeeeee;
+            transition: all 0.1s;
+        }
+
+        .btn:active { transform: translateY(2px); box-shadow: none; }
+        .btn.ok { background: #4caf50; color: white; border: none; box-shadow: 0 3px 0 #388e3c; }
+        .btn.clear { background: #ff5252; color: white; border: none; box-shadow: 0 3px 0 #d32f2f; }
+
+        /* Η Κάρτα */
+        .card {
+            position: absolute;
+            width: 170px;
+            height: 100px;
+            background: linear-gradient(135deg, #0d47a1, #42a5f5);
+            border-radius: 12px;
+            color: white;
+            cursor: grab;
+            display: none;
+            z-index: 1000;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            left: -200px;
+            top: 100px;
+        }
+
+        .card-stripe {
+            width: 100%;
+            height: 25px;
+            background: #263238;
+            margin-top: 20px;
+        }
+
+        /* Animation Swipe προς τα κάτω */
+        @keyframes swipeProcess {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(320px); opacity: 0; }
+        }
+
+        .swiping {
+            animation: swipeProcess 0.7s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="pos-case">
+        <div class="swipe-track" id="dropzone">SWIPE HERE</div>
+        
+        <div class="screen">
+            <div id="msg" class="msg">Εισάγετε Ποσό</div>
+            <div id="display" class="amount">0.00€</div>
+        </div>
+
+        <div class="grid">
+            <button class="btn" onclick="add('1')">1</button>
+            <button class="btn" onclick="add('2')">2</button>
+            <button class="btn" onclick="add('3')">3</button>
+            <button class="btn" onclick="add('4')">4</button>
+            <button class="btn" onclick="add('5')">5</button>
+            <button class="btn" onclick="add('6')">6</button>
+            <button class="btn" onclick="add('7')">7</button>
+            <button class="btn" onclick="add('8')">8</button>
+            <button class="btn" onclick="add('9')">9</button>
+            <button class="btn clear" onclick="cls()">✕</button>
+            <button class="btn" onclick="add('0')">0</button>
+            <button class="btn ok" onclick="confirm()">OK</button>
+        </div>
+
+        <div class="card" id="card" draggable="true">
+            <div style="padding: 12px; font-size: 11px; font-weight: bold;">PREMIUM BANK</div>
+            <div class="card-stripe"></div>
+            <div style="padding: 10px; font-size: 10px; text-align: right; opacity: 0.8;">VISA</div>
+        </div>
+    </div>
+
+    <script>
+        let val = "";
+        const display = document.getElementById('display');
+        const msg = document.getElementById('msg');
+        const card = document.getElementById('card');
+        const dropzone = document.getElementById('dropzone');
+
+        function add(n) {
+            if(val.length < 8) val += n;
+            updateUI();
+        }
+
+        function updateUI() {
+            display.innerText = (parseInt(val || 0) / 100).toFixed(2) + "€";
+        }
+
+        function cls() {
+            val = "";
+            updateUI();
+            msg.innerText = "Εισάγετε Ποσό";
+            card.style.display = "none";
+            card.classList.remove('swiping');
+        }
+
+        function confirm() {
+            if (!val || val === "0") return;
+            msg.innerText = "Σύρετε την κάρτα δεξιά";
+            card.style.display = "block";
+            card.style.left = "-190px"; 
+            card.style.top = "80px";
+            setTimeout(() => { card.style.left = "40px"; card.style.transition = "left 0.5s ease"; }, 50);
+        }
+
+        card.ondragstart = (e) => {
+            card.style.transition = "none";
+            e.dataTransfer.setData("text", "card");
+        };
+
+        dropzone.ondragover = (e) => e.preventDefault();
+
+        dropzone.ondrop = (e) => {
+            e.preventDefault();
+            
+            // Κλείδωμα στη σχισμή
+            card.style.left = "280px";
+            card.style.top = "80px";
+            
+            // Animation
+            card.classList.add('swiping');
+            msg.innerText = "Ανάγνωση...";
+
+            setTimeout(() => {
+                msg.innerText = "Εγκρίθηκε!";
+                display.innerText = "Ευχαριστούμε";
+                setTimeout(cls, 3000);
+            }, 1000);
+        };
+    </script>
+</body>
+</html>
