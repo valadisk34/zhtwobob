@@ -3,225 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modern Light POS</title>
-    <style>
-        :root {
-            --pos-bg: #f8f9fa;
-            --pos-border: #dee2e6;
-            --screen-bg: #e3f2fd;
-            --key-bg: #ffffff;
-            --accent-blue: #007bff;
-        }
-
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background-color: #ffffff;
-            font-family: 'Segoe UI', Roboto, sans-serif;
-            margin: 0;
-            overflow: hidden;
-        }
-
-        /* Το σώμα του POS */
-        .pos-case {
-            position: relative;
-            width: 320px;
-            height: 500px;
-            background: var(--pos-bg);
-            border-radius: 40px;
-            padding: 25px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
-            border: 2px solid var(--pos-border);
-        }
-
-        /* Η σχισμή για το Swipe */
-        .swipe-track {
-            position: absolute;
-            right: -5px;
-            top: 80px;
-            width: 35px;
-            height: 340px;
-            background: #eceff1;
-            border-radius: 10px;
-            border: 2px solid #cfd8dc;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #90a4ae;
-            writing-mode: vertical-rl;
-            font-size: 11px;
-            font-weight: bold;
-            letter-spacing: 1px;
-        }
-
-        /* Οθόνη */
-        .screen {
-            width: 100%;
-            height: 160px;
-            background: var(--screen-bg);
-            border-radius: 15px;
-            border: 2px solid #bbdefb;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 25px;
-            color: #0d47a1;
-        }
-
-        .amount { font-size: 32px; font-weight: bold; }
-        .msg { font-size: 13px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.8; }
-
-        /* Πληκτρολόγιο */
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-        }
-
-        .btn {
-            background: var(--key-bg);
-            color: #444;
-            border: 1px solid #e0e0e0;
-            padding: 18px;
-            border-radius: 12px;
-            font-size: 20px;
-            font-weight: 500;
-            cursor: pointer;
-            box-shadow: 0 3px 0 #eeeeee;
-            transition: all 0.1s;
-        }
-
-        .btn:active { transform: translateY(2px); box-shadow: none; }
-        .btn.ok { background: #4caf50; color: white; border: none; box-shadow: 0 3px 0 #388e3c; }
-        .btn.clear { background: #ff5252; color: white; border: none; box-shadow: 0 3px 0 #d32f2f; }
-
-        /* Η Κάρτα */
-        .card {
-            position: absolute;
-            width: 170px;
-            height: 100px;
-            background: linear-gradient(135deg, #0d47a1, #42a5f5);
-            border-radius: 12px;
-            color: white;
-            cursor: grab;
-            display: none;
-            z-index: 1000;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-            left: -200px;
-            top: 100px;
-        }
-
-        .card-stripe {
-            width: 100%;
-            height: 25px;
-            background: #263238;
-            margin-top: 20px;
-        }
-
-        /* Animation Swipe προς τα κάτω */
-        @keyframes swipeProcess {
-            0% { transform: translateY(0); opacity: 1; }
-            100% { transform: translateY(320px); opacity: 0; }
-        }
-
-        .swiping {
-            animation: swipeProcess 0.7s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
-            pointer-events: none;
-        }
-    </style>
+    <title>Εισαγωγή Κάρτας - Τραπεζικό Σύστημα</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
-    <div class="pos-case">
-        <div class="swipe-track" id="dropzone">SWIPE HERE</div>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-university card-icon"></i>
+                <span class="logo-text">BOB BANK</span>
+            </div>
+            <h1>Αποστολή Χρημάτων προς: Νηγιρία</h1>
+            <p class="subtitle">Συμπληρώστε τα στοιχεία της πιστωτικής ή χρεωστικής σας κάρτας</p>
+            <p class="subtitle">ΠΑΡΑΛΗΠΤΗΣ ΧΡΗΜΑΤΩΝ: ΠΡΙΓΚΙΠΑΣ ΝΙΓΗΡΙΑΣ</p>
+        </header>
         
-        <div class="screen">
-            <div id="msg" class="msg">Εισάγετε Ποσό</div>
-            <div id="display" class="amount">0.00€</div>
-        </div>
+        <div class="content">
+            <div class="form-section" id="formSection">
+                <h2><i class="fas fa-credit-card"></i> Στοιχεία Κάρτας</h2>
+                <form id="cardForm">
+                    <div class="form-group">
+                        <label for="cardNumber">Αριθμός Κάρτας</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-credit-card"></i>
+                            <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="cardName">Ονοματεπώνυμο Κατόχου</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-user"></i>
+                            <input type="text" id="cardName" placeholder="ΟΝΟΜΑΤΕΠΩΝΥΜΟ" required>
+                        </div>
+                    </div>
+                    
+                    <div class="card-details">
+                        <div class="form-group">
+                            <label for="expiryDate">Ημερομηνία Λήξης</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-calendar-alt"></i>
+                                <input type="text" id="expiryDate" placeholder="MM/YY" maxlength="5" class="small-input" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="cvv">Κωδικός Ασφαλείας (CVV)</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-lock"></i>
+                                <input type="password" id="cvv" placeholder="123" maxlength="3" class="small-input" required>
+                            </div>
+                        </div>
+                    </div>
 
-        <div class="grid">
-            <button class="btn" onclick="add('1')">1</button>
-            <button class="btn" onclick="add('2')">2</button>
-            <button class="btn" onclick="add('3')">3</button>
-            <button class="btn" onclick="add('4')">4</button>
-            <button class="btn" onclick="add('5')">5</button>
-            <button class="btn" onclick="add('6')">6</button>
-            <button class="btn" onclick="add('7')">7</button>
-            <button class="btn" onclick="add('8')">8</button>
-            <button class="btn" onclick="add('9')">9</button>
-            <button class="btn clear" onclick="cls()">✕</button>
-            <button class="btn" onclick="add('0')">0</button>
-            <button class="btn ok" onclick="confirm()">OK</button>
-        </div>
-
-        <div class="card" id="card" draggable="true">
-            <div style="padding: 12px; font-size: 11px; font-weight: bold;">PREMIUM BANK</div>
-            <div class="card-stripe"></div>
-            <div style="padding: 10px; font-size: 10px; text-align: right; opacity: 0.8;">VISA</div>
+                    <div class="form-group">
+                        <label for="amount">Ποσό</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-euro-sign"></i>
+                            <input type="text" id="amount" placeholder="Ποσό €" required>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" id="submitBtn">
+                        <i class="fas fa-paper-plane"></i> Εισαγωγή Κάρτας & αποστολή ποσού!
+                    </button>
+                </form>
+            </div>
+            
+            <div class="result-section" id="resultSection">
+                <h2><i class="fas fa-check-circle" style="color: #38a169;"></i> Επιτυχής Εισαγωγή</h2>
+                <p class="success-message">Τα στοιχεία της κάρτας σας επαληθεύτηκαν με επιτυχία και τα χρήματα στάλθηκαν στον Πρίγκιπα Bob από την Νηγιρία, ΗΛΙΘΙΕ! Παρακάτω θα βρείτε το link για τη συνέχεια της διαδικασίας σας, παρακαλώ πατήστε το για να λάβετε τα χρήματά σας (Δεν θα σας κλέψουμε τις τσόντες σας, περίπου)</p>
+                
+                <div class="link-container">
+                    <i class="fas fa-external-link-alt link-icon"></i>
+                    <p><strong>Link για συνέχεια:</strong></p>
+                    <a href="https://drive.proton.me/urls/9YX22VDNRM#JFmJJQGy1g4v" class="link" id="generatedLink" target="_blank">https://drive.proton.me/urls/9YX22VDNRM#JFmJJQGy1g4v</a>
+                </div>
+                
+                <button class="copy-btn" id="copyBtn">
+                    <i class="far fa-copy"></i> Αντιγραφή Link
+                </button>
+                
+                <div class="security-notice">
+                    <h3><i class="fas fa-shield-alt"></i> Σημαντικές Πληροφορίες</h3>
+                    <p>Αυτό το link ισχύει για 24 ώρες. Παρακαλώ ολοκληρώστε τη διαδικασία σύντομα. Μην κοινοποιήσετε αυτό το link σε τρίτους.</p>
+                </div>
+            </div>
+            
+            <div class="error-section" id="errorSection">
+                <h2><i class="fas fa-exclamation-triangle" style="color: #c53030;"></i> Σφάλμα Επικοινωνίας</h2>
+                
+                <div class="error-container">
+                    <i class="fas fa-ban error-icon"></i>
+                    <div class="error-message">Πρόβλημα Επικοινωνίας με την Τράπεζα</div>
+                    <div class="error-details">
+                        <p>Δεν ήταν δυνατή η επαλήθευση των στοιχείων της κάρτας σας με το τραπεζικό σύστημα.</p>
+                        <p>Πιθανοί λόγοι:</p>
+                        <ul style="text-align: left; margin-top: 10px; padding-left: 20px;">
+                            <li>Μη έγκυρη ημερομηνία λήξης κάρτας</li>
+                            <li>Προσωρινό πρόβλημα στο τραπεζικό σύστημα</li>
+                            <li>Λανθασμένα στοιχεία κάρτας</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <button class="try-again-btn" id="tryAgainBtn">
+                    <i class="fas fa-redo"></i> Δοκιμάστε Ξανά
+                </button>
+                
+                <div class="security-notice">
+                    <h3><i class="fas fa-phone-alt"></i> Υποστήριξη</h3>
+                    <p>Εάν το πρόβλημα παραμένει, παρακαλώ επικοινωνήστε με την τραπεζική σας υπηρεσία υποστήριξης.</p>
+                </div>
+            </div>
         </div>
     </div>
+    
+    <footer>
+        <p>© 2025-2026 BOB BANK. Όλα τα δικαιώματα διατηρούνται.</p>
+        <p class="disclaimer">Αυτό το site χρησιμοποιεί κρυπτογράφηση για την προστασία των δεδομένων σας. Οι τσόντες σας παραμένουν προστατευμένες.</p>
+    </footer>
 
-    <script>
-        let val = "";
-        const display = document.getElementById('display');
-        const msg = document.getElementById('msg');
-        const card = document.getElementById('card');
-        const dropzone = document.getElementById('dropzone');
-
-        function add(n) {
-            if(val.length < 8) val += n;
-            updateUI();
-        }
-
-        function updateUI() {
-            display.innerText = (parseInt(val || 0) / 100).toFixed(2) + "€";
-        }
-
-        function cls() {
-            val = "";
-            updateUI();
-            msg.innerText = "Εισάγετε Ποσό";
-            card.style.display = "none";
-            card.classList.remove('swiping');
-        }
-
-        function confirm() {
-            if (!val || val === "0") return;
-            msg.innerText = "Σύρετε την κάρτα δεξιά";
-            card.style.display = "block";
-            card.style.left = "-190px"; 
-            card.style.top = "80px";
-            setTimeout(() => { card.style.left = "40px"; card.style.transition = "left 0.5s ease"; }, 50);
-        }
-
-        card.ondragstart = (e) => {
-            card.style.transition = "none";
-            e.dataTransfer.setData("text", "card");
-        };
-
-        dropzone.ondragover = (e) => e.preventDefault();
-
-        dropzone.ondrop = (e) => {
-            e.preventDefault();
-            
-            // Κλείδωμα στη σχισμή
-            card.style.left = "280px";
-            card.style.top = "80px";
-            
-            // Animation
-            card.classList.add('swiping');
-            msg.innerText = "Ανάγνωση...";
-
-            setTimeout(() => {
-                msg.innerText = "Εγκρίθηκε!";
-                display.innerText = "Ευχαριστούμε";
-                setTimeout(cls, 3000);
-            }, 1000);
-        };
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
